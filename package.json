@@ -1,0 +1,25 @@
+{
+  "name": "lox-js",
+  "version": "1.0.0",
+  "description": "A JavaScript based implementation of the Lox language",
+  "main": "src/index.js",
+  "scripts": {
+    "lox": "node src/index.js",
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bberak/lox-js.git"
+  },
+  "keywords": [
+    "lox",
+    "js",
+    "crafting-interpreters"
+  ],
+  "author": "bberak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bberak/lox-js/issues"
+  },
+  "homepage": "https://github.com/bberak/lox-js#readme"
+}
