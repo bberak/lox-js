@@ -1,4 +1,4 @@
-const assert = require("assert");
+const { assert } = require("chai");
 
 describe("Array", function() {
   describe("#indexOf()", function() {
