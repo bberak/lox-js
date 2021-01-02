@@ -2,9 +2,9 @@
   "name": "lox-js",
   "version": "1.0.0",
   "description": "A JavaScript based implementation of the Lox language",
-  "main": "src/index.js",
+  "main": "src/lox.js",
   "scripts": {
-    "lox": "node src/index.js",
+    "lox": "node src/lox.js",
     "lint": "eslint src/** test/**",
     "test": "mocha"
   },
