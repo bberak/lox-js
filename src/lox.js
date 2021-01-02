@@ -12,7 +12,7 @@ function runFile(file) {
 	const source = fs.readFileSync(fullPath, "utf8");
 	const failed = run(source);
 
-	if (failed) process.exit(1);
+	if (failed) process.exitCode = 1;
 }
 
 function runPrompt() {
