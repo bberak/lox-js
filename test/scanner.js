@@ -4,6 +4,19 @@ const TokenType = require("../src/token-type");
 
 describe("Scanner", function() {
 	describe("#scanTokens()", function() {
+		it("should always append EOF token", function() {
+			const scanner = new Scanner("");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+			assert.equal(tokens.length, 1, "tokens length mismatch");
+			assert.equal(tokens[0].type, TokenType.EOF, "types mismatch");
+			assert.equal(tokens[0].lexeme, "", "lexemes mismatch");
+			assert.equal(tokens[0].literal, null, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.EOF}  null`, "toString values mismatch");
+		});
+
 		it("should identify LEFT_PAREN token", function() {
 			const scanner = new Scanner("(");
 			const tokens = scanner.scanTokens();
@@ -14,6 +27,30 @@ describe("Scanner", function() {
 			assert.equal(tokens[0].literal, null, "literals mismatch");
 			assert.equal(tokens[0].line, 1, "line numbers mismatch");
 			assert.equal(tokens[0].toString(), `${TokenType.LEFT_PAREN} ( null`, "toString values mismatch");
+		});
+
+		it("should identify SLASH token", function() {
+			const scanner = new Scanner("/");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+			assert.equal(tokens[0].type, TokenType.SLASH, "types mismatch");
+			assert.equal(tokens[0].lexeme, "/", "lexemes mismatch");
+			assert.equal(tokens[0].literal, null, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.SLASH} / null`, "toString values mismatch");
+		});
+
+		it("should ignore comments", function() {
+			const scanner = new Scanner("//+-whatever");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+			assert.equal(tokens[0].type, TokenType.EOF, "types mismatch");
+			assert.equal(tokens[0].lexeme, "", "lexemes mismatch");
+			assert.equal(tokens[0].literal, null, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.EOF}  null`, "toString values mismatch");
 		});
 
 		it("should identify BANG token", function() {

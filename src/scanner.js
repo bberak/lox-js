@@ -16,16 +16,19 @@ function Scanner(source, onError) {
 		return source[current - 1];
 	};
 
+	const peek = () => source[current];
+
 	const match = (expected) => {
 		if (isAtEnd()) return false;
-		if (source[current] !== expected) return false;
+		if (peek() !== expected) return false;
 
-		current++;
+		advance();
 		return true;
 	}
 
 	const addToken = (type, literal = null) => {
-		const text = source.substr(start, current);
+		const text = source.substring(start, current);
+
 		tokens.push(new Token(type, text, literal, line));
 	};
 
@@ -67,13 +70,23 @@ function Scanner(source, onError) {
 				addToken(match("=") ? TokenType.BANG_EQUAL : TokenType.BANG);
 				break;
 			case "=":
-				addToken(match("=") ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
+				addToken(match("=") ? TokenType.EQUAL_EQUAL: TokenType.EQUAL);
 				break;
 			case "<":
 				addToken(match("=") ? TokenType.LESS_EQUAL : TokenType.LESS);
 				break;
 			case ">":
 				addToken(match("=") ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+				break;
+			case "/":
+				if (match("/")) {
+					// A comment goes until the end of the line.
+					while (peek() !== "\n" && !isAtEnd()) {
+						advance();
+					}
+				} else {
+					addToken(TokenType.SLASH);
+				}
 				break;
 			default:
 				onError && onError(line, `Unexpected character: ${char}`);
