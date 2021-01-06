@@ -16,6 +16,54 @@ describe("Scanner", function() {
 			assert.equal(tokens[0].toString(), `${TokenType.LEFT_PAREN} ( null`, "toString values mismatch");
 		});
 
+		it("should identify BANG token", function() {
+			const scanner = new Scanner("!");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+			assert.equal(tokens[0].type, TokenType.BANG, "types mismatch");
+			assert.equal(tokens[0].lexeme, "!", "lexemes mismatch");
+			assert.equal(tokens[0].literal, null, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.BANG} ! null`, "toString values mismatch");
+		});
+
+		it("should identify BANG_EQUAL token", function() {
+			const scanner = new Scanner("!=");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+			assert.equal(tokens[0].type, TokenType.BANG_EQUAL, "types mismatch");
+			assert.equal(tokens[0].lexeme, "!=", "lexemes mismatch");
+			assert.equal(tokens[0].literal, null, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.BANG_EQUAL} != null`, "toString values mismatch");
+		});
+
+		it("should identify EQUAL token", function() {
+			const scanner = new Scanner("=");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+			assert.equal(tokens[0].type, TokenType.EQUAL, "types mismatch");
+			assert.equal(tokens[0].lexeme, "=", "lexemes mismatch");
+			assert.equal(tokens[0].literal, null, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.EQUAL} = null`, "toString values mismatch");
+		});
+
+		it("should identify EQUAL_EQUAL token", function() {
+			const scanner = new Scanner("==");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+			assert.equal(tokens[0].type, TokenType.EQUAL_EQUAL, "types mismatch");
+			assert.equal(tokens[0].lexeme, "==", "lexemes mismatch");
+			assert.equal(tokens[0].literal, null, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.EQUAL_EQUAL} == null`, "toString values mismatch");
+		});
+
 		it("should identify unexpected character", function() {
 			let failed = false;
 

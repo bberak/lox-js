@@ -16,6 +16,14 @@ function Scanner(source, onError) {
 		return source[current - 1];
 	};
 
+	const match = (expected) => {
+		if (isAtEnd()) return false;
+		if (source[current] !== expected) return false;
+
+		current++;
+		return true;
+	}
+
 	const addToken = (type, literal = null) => {
 		const text = source.substr(start, current);
 		tokens.push(new Token(type, text, literal, line));
@@ -54,6 +62,18 @@ function Scanner(source, onError) {
 				break;
 			case "*":
 				addToken(TokenType.STAR);
+				break;
+			case "!":
+				addToken(match("=") ? TokenType.BANG_EQUAL : TokenType.BANG);
+				break;
+			case "=":
+				addToken(match("=") ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
+				break;
+			case "<":
+				addToken(match("=") ? TokenType.LESS_EQUAL : TokenType.LESS);
+				break;
+			case ">":
+				addToken(match("=") ? TokenType.GREATER_EQUAL : TokenType.GREATER);
 				break;
 			default:
 				onError && onError(line, `Unexpected character: ${char}`);
