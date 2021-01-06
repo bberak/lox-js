@@ -169,7 +169,7 @@ describe("Scanner", function() {
 			};
 
 			const scanner = new Scanner("@", onError);
-			const tokens = scanner.scanTokens();
+			scanner.scanTokens();
 
 			assert.equal(failed, true, "onError was not called")
 		});
@@ -187,7 +187,7 @@ describe("Scanner", function() {
 			};
 
 			const scanner = new Scanner("@^", onError);
-			const tokens = scanner.scanTokens();
+			scanner.scanTokens();
 
 			assert.equal(failed, true, "onError was not called")
 		});
@@ -210,7 +210,7 @@ describe("Scanner", function() {
 			`;
 
 			const scanner = new Scanner(source, onError);
-			const tokens = scanner.scanTokens();
+			scanner.scanTokens();
 
 			assert.equal(failed, true, "onError was not called")
 		});
