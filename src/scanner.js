@@ -88,6 +88,14 @@ function Scanner(source, onError) {
 					addToken(TokenType.SLASH);
 				}
 				break;
+			case " ":
+			case "\r":
+			case "\t":
+				// Ignore whitespace.
+				break;
+			case "\n":
+				line++;
+				break;
 			default:
 				onError && onError(line, `Unexpected character: ${char}`);
 				break;
