@@ -24,7 +24,24 @@ function Scanner(source, onError) {
 
 		advance();
 		return true;
-	}
+	};
+
+  	const string = () => {
+  		while (peek() !== "\"" && !isAtEnd()) {
+  			if (peek() === "\n") line++;
+  			advance();
+  		}
+
+  		if (isAtEnd())
+  			onError && onError(line, "Unterminated string.");
+
+  		// The closing ".
+  		advance();
+
+  		// Trim the surrounding quotes.
+  		const value = source.substring(start + 1, current - 1);
+  		addToken(TokenType.STRING, value);
+  	};
 
 	const addToken = (type, literal = null) => {
 		const text = source.substring(start, current);
@@ -95,6 +112,9 @@ function Scanner(source, onError) {
 				break;
 			case "\n":
 				line++;
+				break;
+			case "\"": 
+				string(); 
 				break;
 			default:
 				onError && onError(line, `Unexpected character: ${char}`);
