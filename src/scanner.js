@@ -32,37 +32,36 @@ function Scanner(source, onError) {
 		return true;
 	};
 
-  	const string = () => {
-  		while (peek() !== "\"" && !isAtEnd()) {
-  			if (peek() === "\n") line++;
-  			advance();
-  		}
+	const string = () => {
+		while (peek() !== '"' && !isAtEnd()) {
+			if (peek() === "\n") line++;
+			advance();
+		}
 
-  		if (isAtEnd())
-  			onError && onError(line, "Unterminated string.");
+		if (isAtEnd()) onError && onError(line, "Unterminated string.");
 
-  		// The closing ".
-  		advance();
+		// The closing ".
+		advance();
 
-  		// Trim the surrounding quotes.
-  		const value = source.substring(start + 1, current - 1);
-  		addToken(TokenType.STRING, value);
-  	};
+		// Trim the surrounding quotes.
+		const value = source.substring(start + 1, current - 1);
+		addToken(TokenType.STRING, value);
+	};
 
-  	const number = () => {
-  		while (isDigit(peek())) advance();
+	const number = () => {
+		while (isDigit(peek())) advance();
 
-  		// Look for a fractional part.
-  		if (peek() === "." && isDigit(peekNext())) {
-  			// Consume the "."
-  			advance();
+		// Look for a fractional part.
+		if (peek() === "." && isDigit(peekNext())) {
+			// Consume the "."
+			advance();
 
-  			while (isDigit(peek())) advance();
-  		}
+			while (isDigit(peek())) advance();
+		}
 
-  		const value = parseFloat(source.substring(start, current));
-  		addToken(TokenType.NUMBER, value);
-  	}
+		const value = parseFloat(source.substring(start, current));
+		addToken(TokenType.NUMBER, value);
+	};
 
 	const addToken = (type, literal = null) => {
 		const text = source.substring(start, current);
@@ -108,7 +107,7 @@ function Scanner(source, onError) {
 				addToken(match("=") ? TokenType.BANG_EQUAL : TokenType.BANG);
 				break;
 			case "=":
-				addToken(match("=") ? TokenType.EQUAL_EQUAL: TokenType.EQUAL);
+				addToken(match("=") ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
 				break;
 			case "<":
 				addToken(match("=") ? TokenType.LESS_EQUAL : TokenType.LESS);
@@ -134,8 +133,8 @@ function Scanner(source, onError) {
 			case "\n":
 				line++;
 				break;
-			case "\"": 
-				string(); 
+			case '"':
+				string();
 				break;
 			default:
 				if (isDigit(char)) {

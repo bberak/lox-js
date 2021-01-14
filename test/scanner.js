@@ -224,11 +224,11 @@ describe("Scanner", function() {
 			assert.equal(tokens[0].lexeme, "\"abc123\"", "lexemes mismatch");
 			assert.equal(tokens[0].literal, "abc123", "literals mismatch");
 			assert.equal(tokens[0].line, 1, "line numbers mismatch");
-			assert.equal(tokens[0].toString(), `${TokenType.STRING} \"abc123\" abc123`, "toString values mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.STRING} abc123 abc123`, "toString values mismatch");
 		});
 
-		it("should identify STRING token and handle escape character (\)", function() {
-			const scanner = new Scanner("\"abc\\123\"");
+		it("should identify STRING token and handle escape character", function() {
+			const scanner = new Scanner("\"abc\\123\""); 
 			const tokens = scanner.scanTokens();
 
 			assert.isNotEmpty(tokens, "tokens are empty");
@@ -236,7 +236,7 @@ describe("Scanner", function() {
 			assert.equal(tokens[0].lexeme, "\"abc\\123\"", "lexemes mismatch");
 			assert.equal(tokens[0].literal, "abc\\123", "literals mismatch");
 			assert.equal(tokens[0].line, 1, "line numbers mismatch");
-			assert.equal(tokens[0].toString(), `${TokenType.STRING} \"abc\\123\" abc\\123`, "toString values mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.STRING} abc\\123 abc\\123`, "toString values mismatch");
 		});
 
 		it("should identify multi-line STRING token", function() {
@@ -248,7 +248,7 @@ describe("Scanner", function() {
 			assert.equal(tokens[0].lexeme, "\"abc\n123\"", "lexemes mismatch");
 			assert.equal(tokens[0].literal, "abc\n123", "literals mismatch");
 			assert.equal(tokens[0].line, 2, "line numbers mismatch");
-			assert.equal(tokens[0].toString(), `${TokenType.STRING} \"abc\n123\" abc\n123`, "toString values mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.STRING} abc\n123 abc\n123`, "toString values mismatch");
 		});
 
 		it("should identify multi-line STRING token with tabs", function() {
@@ -260,7 +260,7 @@ describe("Scanner", function() {
 			assert.equal(tokens[0].lexeme, "\"abc\n\t123\"", "lexemes mismatch");
 			assert.equal(tokens[0].literal, "abc\n\t123", "literals mismatch");
 			assert.equal(tokens[0].line, 2, "line numbers mismatch");
-			assert.equal(tokens[0].toString(), `${TokenType.STRING} \"abc\n\t123\" abc\n\t123`, "toString values mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.STRING} abc\n\t123 abc\n\t123`, "toString values mismatch");
 		});
 
 		it("should identify multi-line STRING token with tabs", function() {
@@ -276,7 +276,7 @@ describe("Scanner", function() {
 			assert.equal(tokens[0].lexeme, "\"\n\t\t\tabc\n\t\t\t123\n\t\t\t\"", "lexemes mismatch");
 			assert.equal(tokens[0].literal, "\n\t\t\tabc\n\t\t\t123\n\t\t\t", "literals mismatch");
 			assert.equal(tokens[0].line, 4, "line numbers mismatch");
-			assert.equal(tokens[0].toString(), `${TokenType.STRING} \"\n\t\t\tabc\n\t\t\t123\n\t\t\t\" \n\t\t\tabc\n\t\t\t123\n\t\t\t`, "toString values mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.STRING} \n\t\t\tabc\n\t\t\t123\n\t\t\t \n\t\t\tabc\n\t\t\t123\n\t\t\t`, "toString values mismatch");
 		});
 
 		it("should identify unterminated string", function() {
