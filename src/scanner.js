@@ -11,12 +11,18 @@ function Scanner(source, onError) {
 		return current >= source.length;
 	};
 
+	const isDigit = (char) => {
+		return char >= "0" && char <= "9";
+	};
+
 	const advance = () => {
 		current++;
 		return source[current - 1];
 	};
 
 	const peek = () => source[current];
+
+	const peekNext = () => source[current + 1];
 
 	const match = (expected) => {
 		if (isAtEnd()) return false;
@@ -42,6 +48,21 @@ function Scanner(source, onError) {
   		const value = source.substring(start + 1, current - 1);
   		addToken(TokenType.STRING, value);
   	};
+
+  	const number = () => {
+  		while (isDigit(peek())) advance();
+
+  		// Look for a fractional part.
+  		if (peek() === "." && isDigit(peekNext())) {
+  			// Consume the "."
+  			advance();
+
+  			while (isDigit(peek())) advance();
+  		}
+
+  		const value = parseFloat(source.substring(start, current));
+  		addToken(TokenType.NUMBER, value);
+  	}
 
 	const addToken = (type, literal = null) => {
 		const text = source.substring(start, current);
@@ -117,7 +138,11 @@ function Scanner(source, onError) {
 				string(); 
 				break;
 			default:
-				onError && onError(line, `Unexpected character: ${char}`);
+				if (isDigit(char)) {
+					number();
+				} else {
+					onError && onError(line, `Unexpected character: ${char}`);
+				}
 				break;
 		}
 	};

@@ -294,5 +294,29 @@ describe("Scanner", function() {
 
 			assert.equal(failed, true, "onError was not called")
 		});
+
+		it("should identify NUMBER token", function() {
+			const scanner = new Scanner("123");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+			assert.equal(tokens[0].type, TokenType.NUMBER, "types mismatch");
+			assert.equal(tokens[0].lexeme, "123", "lexemes mismatch");
+			assert.equal(tokens[0].literal, 123, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.NUMBER} 123 123`, "toString values mismatch");
+		});
+
+		it("should identify NUMBER token with decimal", function() {
+			const scanner = new Scanner("123.123");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+			assert.equal(tokens[0].type, TokenType.NUMBER, "types mismatch");
+			assert.equal(tokens[0].lexeme, "123.123", "lexemes mismatch");
+			assert.equal(tokens[0].literal, 123.123, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.NUMBER} 123.123 123.123`, "toString values mismatch");
+		});
 	});
 });
