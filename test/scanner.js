@@ -318,5 +318,55 @@ describe("Scanner", function() {
 			assert.equal(tokens[0].line, 1, "line numbers mismatch");
 			assert.equal(tokens[0].toString(), `${TokenType.NUMBER} 123.123 123.123`, "toString values mismatch");
 		});
+
+		it("should identify various reserved word tokens", function() {
+			const scanner = new Scanner("or true while");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+
+			assert.equal(tokens[0].type, TokenType.OR, "types mismatch");
+			assert.equal(tokens[0].lexeme, "or", "lexemes mismatch");
+			assert.equal(tokens[0].literal, null, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.OR} or null`, "toString values mismatch");
+
+			assert.equal(tokens[1].type, TokenType.TRUE, "types mismatch");
+			assert.equal(tokens[1].lexeme, "true", "lexemes mismatch");
+			assert.equal(tokens[1].literal, null, "literals mismatch");
+			assert.equal(tokens[1].line, 1, "line numbers mismatch");
+			assert.equal(tokens[1].toString(), `${TokenType.TRUE} true null`, "toString values mismatch");
+
+			assert.equal(tokens[2].type, TokenType.WHILE, "types mismatch");
+			assert.equal(tokens[2].lexeme, "while", "lexemes mismatch");
+			assert.equal(tokens[2].literal, null, "literals mismatch");
+			assert.equal(tokens[2].line, 1, "line numbers mismatch");
+			assert.equal(tokens[2].toString(), `${TokenType.WHILE} while null`, "toString values mismatch");
+		});
+
+		it("should identify various IDENTIFIER tokens", function() {
+			const scanner = new Scanner("maxYears _loading check2");
+			const tokens = scanner.scanTokens();
+
+			assert.isNotEmpty(tokens, "tokens are empty");
+
+			assert.equal(tokens[0].type, TokenType.IDENTIFIER, "types mismatch");
+			assert.equal(tokens[0].lexeme, "maxYears", "lexemes mismatch");
+			assert.equal(tokens[0].literal, null, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[0].toString(), `${TokenType.IDENTIFIER} maxYears null`, "toString values mismatch");
+
+			assert.equal(tokens[1].type, TokenType.IDENTIFIER, "types mismatch");
+			assert.equal(tokens[1].lexeme, "_loading", "lexemes mismatch");
+			assert.equal(tokens[1].literal, null, "literals mismatch");
+			assert.equal(tokens[1].line, 1, "line numbers mismatch");
+			assert.equal(tokens[1].toString(), `${TokenType.IDENTIFIER} _loading null`, "toString values mismatch");
+
+			assert.equal(tokens[2].type, TokenType.IDENTIFIER, "types mismatch");
+			assert.equal(tokens[2].lexeme, "check2", "lexemes mismatch");
+			assert.equal(tokens[2].literal, null, "literals mismatch");
+			assert.equal(tokens[2].line, 1, "line numbers mismatch");
+			assert.equal(tokens[2].toString(), `${TokenType.IDENTIFIER} check2 null`, "toString values mismatch");
+		});
 	});
 });

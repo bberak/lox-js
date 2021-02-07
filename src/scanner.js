@@ -1,6 +1,25 @@
 const Token = require("./token");
 const TokenType = require("./token-type");
 
+const keywords = {
+	"and": TokenType.AND,
+	"class": TokenType.CLASS,
+	"else": TokenType.ELSE,
+	"false": TokenType.FALSE,
+	"for": TokenType.FOR,
+	"fun": TokenType.FUN,
+	"if": TokenType.IF,
+	"nil": TokenType.NIL,
+	"or": TokenType.OR,
+	"print": TokenType.PRINT,
+	"return": TokenType.RETURN,
+	"super": TokenType.SUPER,
+	"this": TokenType.THIS,
+	"true": TokenType.TRUE,
+	"var": TokenType.VAR,
+	"while": TokenType.WHILE
+};
+
 function Scanner(source, onError) {
 	let start = 0;
 	let current = 0;
@@ -13,6 +32,18 @@ function Scanner(source, onError) {
 
 	const isDigit = (char) => {
 		return char >= "0" && char <= "9";
+	};
+
+	const isAlpha = (char) => {
+		return (
+			(char >= "a" && char <= "z") ||
+			(char >= "A" && char <= "Z") ||
+			char === "_"
+		);
+	};
+
+	const isAlphaNumeric = (char) => {
+		return isAlpha(char) || isDigit(char);
 	};
 
 	const advance = () => {
@@ -63,10 +94,19 @@ function Scanner(source, onError) {
 		addToken(TokenType.NUMBER, value);
 	};
 
-	const addToken = (type, literal = null) => {
-		const text = source.substring(start, current);
+	const identifier = () => {
+		while (isAlphaNumeric(peek())) advance();
 
-		tokens.push(new Token(type, text, literal, line));
+		const lexeme = source.substring(start, current);
+		const type = keywords[lexeme] || TokenType.IDENTIFIER;
+
+		addToken(type);
+	};
+
+	const addToken = (type, literal = null) => {
+		const lexeme = source.substring(start, current);
+
+		tokens.push(new Token(type, lexeme, literal, line));
 	};
 
 	const scanToken = () => {
@@ -113,7 +153,9 @@ function Scanner(source, onError) {
 				addToken(match("=") ? TokenType.LESS_EQUAL : TokenType.LESS);
 				break;
 			case ">":
-				addToken(match("=") ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+				addToken(
+					match("=") ? TokenType.GREATER_EQUAL : TokenType.GREATER
+				);
 				break;
 			case "/":
 				if (match("/")) {
@@ -139,6 +181,8 @@ function Scanner(source, onError) {
 			default:
 				if (isDigit(char)) {
 					number();
+				} else if (isAlpha(char)) {
+					identifier();
 				} else {
 					onError && onError(line, `Unexpected character: ${char}`);
 				}
