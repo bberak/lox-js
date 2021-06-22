@@ -1,4 +1,7 @@
-const Token = require("./token");
+/*
+generateType:
+
+Generate an expresssion type similar to below:
 
 function Binary(left, operator, right) {
 	this.left = left;
@@ -8,36 +11,24 @@ function Binary(left, operator, right) {
 
 	return this;
 }
+*/
 
-function Grouping(expression) {
-	this.expression = expression;
-	this.accept = (visitor) => visitor.visitGrouping(this);
+const generateType = (name, ...fields) => {
+	return new Function(`return () => function ${name}(${fields.join(", ")}) {
+		${fields.map((x) => `this.${x} = ${x};`).join("\n")}
+		this.accept = (visitor) => visitor.visit${name}(this);
 
-	return this;
-}
-
-function Literal(value) {
-	this.value = value;
-	this.accept = (visitor) => visitor.visitLiteral(this);
-
-	return this;
-}
-
-function Unary(operator, right) {
-	this.operator = operator;
-	this.right = right;
-	this.accept = (visitor) => visitor.visitUnary(this);
-
-	return this;
-}
+		return this;
+	}`)()();
+};
 
 function AstPrinter() {
 	const parens = (name, ...expressions) => {
-		const builder = [`(${name}`];
-		
-		expressions.forEach(x => builder.push(x.accept(this)));
+		const builder = [`${name}`];
 
-		return `${builder.join(" ")})`;
+		expressions.forEach((x) => builder.push(x.accept(this)));
+
+		return `(${builder.join(" ")})`;
 	};
 
 	this.print = (expression) => expression.accept(this);
@@ -57,9 +48,9 @@ function AstPrinter() {
 }
 
 module.exports = {
-	Binary,
-	Grouping,
-	Literal,
-	Unary,
-	AstPrinter
+	Binary: generateType("Binary", "left", "operator", "right"),
+	Grouping: generateType("Grouping", "expression"),
+	Literal: generateType("Literal", "value"),
+	Unary: generateType("Unary", "operator", "right"),
+	AstPrinter,
 };
