@@ -191,6 +191,8 @@ function Parser(tokens, onError) {
 			if (e instanceof ParseError)
 				return null;
 
+			//-- If we get here, some other error has occurred such as an AssertionError from
+			//-- a test suite or something else we didn't expect.
 			throw e;
 		}
 	};
