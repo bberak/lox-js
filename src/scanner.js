@@ -20,6 +20,14 @@ const keywords = {
 	"while": TokenType.WHILE
 };
 
+class ScanError extends Error {
+	constructor(line, message) {
+		super(message);
+		this.line = line;
+		this.name = "ScanError";
+	}
+}
+
 function Scanner(source, onError) {
 	let start = 0;
 	let current = 0;
@@ -69,7 +77,7 @@ function Scanner(source, onError) {
 			advance();
 		}
 
-		if (isAtEnd()) onError && onError(line, "Unterminated string.");
+		if (isAtEnd()) onError && onError(new ScanError(line, "Unterminated string."));
 
 		// The closing ".
 		advance();
@@ -184,7 +192,7 @@ function Scanner(source, onError) {
 				} else if (isAlpha(char)) {
 					identifier();
 				} else {
-					onError && onError(line, `Unexpected character: ${char}`);
+					onError && onError(new ScanError(line, `Unexpected character: ${char}`));
 				}
 				break;
 		}

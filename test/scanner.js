@@ -161,11 +161,11 @@ describe("Scanner", function() {
 		it("should identify unexpected character", function() {
 			let failed = false;
 
-			const onError = (line, message) => { 
+			const onError = (e) => { 
 				failed = true;
 
-				assert.equal(line, 1, "line numbers mismatch");
-				assert.equal(message, "Unexpected character: @", "error messages mismatch");
+				assert.equal(e.line, 1, "line numbers mismatch");
+				assert.equal(e.message, "Unexpected character: @", "error messages mismatch");
 			};
 
 			const scanner = new Scanner("@", onError);
@@ -178,9 +178,9 @@ describe("Scanner", function() {
 			let failed = false;
 			let errorIndex = 0;
 
-			const onError = (line, message) => {
-				assert.equal(line, 1, "line numbers mismatch");
-				assert.equal(message, ["Unexpected character: @", "Unexpected character: ^"][errorIndex], "error messages mismatch");
+			const onError = (e) => {
+				assert.equal(e.line, 1, "line numbers mismatch");
+				assert.equal(e.message, ["Unexpected character: @", "Unexpected character: ^"][errorIndex], "error messages mismatch");
 				
 				failed = true;
 				errorIndex++;
@@ -196,9 +196,9 @@ describe("Scanner", function() {
 			let failed = false;
 			let errorIndex = 0;
 
-			const onError = (line, message) => { 
-				assert.equal(line, [2, 3][errorIndex], "line numbers mismatch");
-				assert.equal(message, ["Unexpected character: @", "Unexpected character: ^"][errorIndex], "error messages mismatch");
+			const onError = (e) => { 
+				assert.equal(e.line, [2, 3][errorIndex], "line numbers mismatch");
+				assert.equal(e.message, ["Unexpected character: @", "Unexpected character: ^"][errorIndex], "error messages mismatch");
 				
 				failed = true;
 				errorIndex++;
@@ -282,11 +282,11 @@ describe("Scanner", function() {
 		it("should identify unterminated string", function() {
 			let failed = false;
 
-			const onError = (line, message) => { 
+			const onError = (e) => { 
 				failed = true;
 
-				assert.equal(line, 1, "line numbers mismatch");
-				assert.equal(message, "Unterminated string.", "error messages mismatch");
+				assert.equal(e.line, 1, "line numbers mismatch");
+				assert.equal(e.message, "Unterminated string.", "error messages mismatch");
 			};
 
 			const scanner = new Scanner("\"abc123", onError);

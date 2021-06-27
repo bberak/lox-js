@@ -2,9 +2,20 @@ const fs = require("fs");
 const readline = require("readline");
 const args = process.argv;
 const Scanner = require("./scanner");
+const Parser = require("./parser");
+const { Printer } = require("./expressions");
+const TokenType = require("./token-type");
 
 const report = (line, message) => {
 	console.error(`[line ${line}] ${message}`);
+};
+
+const error = (token, message) => {
+	if (token.type == TokenType.EOF) {
+		report(token.line, `at end: ${message}`);
+	} else {
+		report(token.line, `at '${token.lexeme}': ${message}`);
+	}
 };
 
 const runFile = (file) => {
@@ -31,11 +42,17 @@ const runPrompt = () => {
 const run = (source) => {
 	let failed = false;
 
-	const onError = (line, message) => { failed = true; report(line, message); };
-	const scanner = new Scanner(source, onError);
+	const onScanError = (e) => { failed = true; report(e.line, e.message); };
+	const scanner = new Scanner(source, onScanError);
 	const tokens = scanner.scanTokens();
 
-	console.log("Tokens", tokens);
+	const onParseError = (e) => { failed = true; error(e.token, e.message); };
+	const parser = new Parser(tokens, onParseError);
+	const tree = parser.parse();
+	const printer = new Printer(tree);
+
+	console.log("Tree:", tree);
+	console.log("Pretty:", printer.print())
 
 	return failed;
 };

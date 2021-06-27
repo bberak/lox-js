@@ -22,7 +22,7 @@ const generateType = (name, ...fields) => {
 	}`)()();
 };
 
-function AstPrinter() {
+function Printer(expression) {
 	const parens = (name, ...expressions) => {
 		const builder = [`${name}`];
 
@@ -31,7 +31,7 @@ function AstPrinter() {
 		return `(${builder.join(" ")})`;
 	};
 
-	this.print = (expression) => expression.accept(this);
+	this.print = () => expression.accept(this);
 
 	this.visitBinary = (binary) => parens(binary.operator.lexeme, binary.left, binary.right);
 
@@ -52,5 +52,5 @@ module.exports = {
 	Grouping: generateType("Grouping", "expression"),
 	Literal: generateType("Literal", "value"),
 	Unary: generateType("Unary", "operator", "right"),
-	AstPrinter,
+	Printer,
 };
