@@ -188,8 +188,10 @@ function Parser(tokens, onError) {
 		try {
 			return equality();
 		} catch (e) {
-			onError(e);
-			return null;
+			if (e instanceof ParseError)
+				return null;
+
+			throw e;
 		}
 	};
 

@@ -284,7 +284,7 @@ describe("Scanner", function() {
 
 			const onError = (e) => { 
 				failed = true;
-
+				
 				assert.equal(e.line, 1, "line numbers mismatch");
 				assert.equal(e.message, "Unterminated string.", "error messages mismatch");
 			};

@@ -48,12 +48,16 @@ const run = (source) => {
 
 	const onParseError = (e) => { failed = true; error(e.token, e.message); };
 	const parser = new Parser(tokens, onParseError);
-	const tree = parser.parse();
-	const printer = new Printer(tree);
+	const expression = parser.parse();
+	
+	console.log("Expression:", expression);
 
-	console.log("Tree:", tree);
-	console.log("Pretty:", printer.print())
+	if (expression) {
+		const printer = new Printer(expression);
 
+		console.log("Pretty:", printer.print())	
+	}
+	
 	return failed;
 };
 
