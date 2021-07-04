@@ -40,9 +40,9 @@ const runPrompt = () => {
 };
 
 const run = (source) => {
-	let failed = false;
+	if (!source) return;
 
-	if (!source) return failed;
+	let failed = false;
 
 	const onScanError = (e) => { failed = true; report(e.line, e.message); };
 	const scanner = new Scanner(source, onScanError);
