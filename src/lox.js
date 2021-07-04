@@ -3,7 +3,8 @@ const readline = require("readline");
 const args = process.argv;
 const Scanner = require("./scanner");
 const Parser = require("./parser");
-const { Printer } = require("./expressions");
+const Printer = require("./printer");
+const Interpreter = require("./interpreter");
 const TokenType = require("./token-type");
 
 const report = (line, message) => {
@@ -11,11 +12,10 @@ const report = (line, message) => {
 };
 
 const error = (token, message) => {
-	if (token.type == TokenType.EOF) {
+	if (token.type == TokenType.EOF)
 		report(token.line, `at end: ${message}`);
-	} else {
+	else
 		report(token.line, `at '${token.lexeme}': ${message}`);
-	}
 };
 
 const runFile = (file) => {
@@ -42,6 +42,8 @@ const runPrompt = () => {
 const run = (source) => {
 	let failed = false;
 
+	if (!source) return failed;
+
 	const onScanError = (e) => { failed = true; report(e.line, e.message); };
 	const scanner = new Scanner(source, onScanError);
 	const tokens = scanner.scanTokens();
@@ -49,13 +51,14 @@ const run = (source) => {
 	const onParseError = (e) => { failed = true; error(e.token, e.message); };
 	const parser = new Parser(tokens, onParseError);
 	const expression = parser.parse();
-	
-	console.log("Expression:", expression);
 
-	if (expression) {
+	if (!failed) {
 		const printer = new Printer(expression);
+		const interpreter = new Interpreter(expression);
 
+		console.log("Expression:", expression);
 		console.log("Pretty:", printer.print())	
+		console.log("Result:", interpreter.interpret());
 	}
 	
 	return failed;
