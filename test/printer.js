@@ -1,5 +1,6 @@
 const { assert } = require("chai");
-const { Printer, Unary, Binary, Literal, Grouping } = require("../src/expressions");
+const { Unary, Binary, Literal, Grouping } = require("../src/expressions");
+const Printer = require("../src/printer");
 const Token = require("../src/token");
 const TokenType = require("../src/token-type");
 
