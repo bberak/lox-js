@@ -11,22 +11,44 @@ function Interpreter(expression) {
 		return true;
 	};
 
+	const isEqual = (a, b) => {
+		if (a === null && b === null) return true;
+		if (a === null) return false;
+
+		return a === b;
+	};
+
 	this.interpret = () => evaluate(expression);
 	
 	this.visitBinary = (binary) => {
-		switch (binary.operator.type) {
-			case TokenType.MINUS: return evaluate(binary.left) - evaluate(binary.right);
-			case TokenType.PLUS: return evaluate(binary.left) + evaluate(binary.right);
-			case TokenType.SLASH: return evaluate(binary.left) / evaluate(binary.right);
-			case TokenType.STAR: return evaluate(binary.left) * evaluate(binary.right);
-			case TokenType.BANG_EQUAL: return isTruthy(evaluate(binary.left)) !== isTruthy(evaluate(binary.right));
-			case TokenType.EQUAL_EQUAL: return isTruthy(evaluate(binary.left)) === isTruthy(evaluate(binary.right));
-			case TokenType.GREATER: return evaluate(binary.left) > evaluate(binary.right);
-			case TokenType.GREATER_EQUAL: return evaluate(binary.left) >= evaluate(binary.right);
-			case TokenType.LESS: return evaluate(binary.left) < evaluate(binary.right);
-			case TokenType.LESS_EQUAL: return evaluate(binary.left) <= evaluate(binary.right);
+		const operator = binary.operator;
+		const left = evaluate(binary.left);
+		const right = evaluate(binary.right);
 
-			default: throw new Error(`Cannot handle ${binary.operator.type} operator`);
+		switch (operator.type) {
+			case TokenType.MINUS: return left - right;
+			case TokenType.PLUS:
+				if (typeof left === "number" && typeof right === "number")
+					return left + right;
+
+				if (typeof left === "string" && typeof right === "string")
+					return left + right;
+
+				if (typeof left !== typeof right)
+					throw new Error("Can only add operands of the same type");
+
+				throw new Error("Can only add operands of type number or string");
+
+			case TokenType.SLASH: return left / right;
+			case TokenType.STAR: return left * right;
+			case TokenType.GREATER: return left > right;
+			case TokenType.GREATER_EQUAL: return left >= right;
+			case TokenType.LESS: return left < right;
+			case TokenType.LESS_EQUAL: return left <= right;
+			case TokenType.BANG_EQUAL: return !isEqual(left, right);
+			case TokenType.EQUAL_EQUAL: return isEqual(left, right);
+
+			default: throw new Error(`Cannot handle ${operator.type} operator`);
 		}
 	};
 	
@@ -35,11 +57,14 @@ function Interpreter(expression) {
 	this.visitLiteral = (literal) => literal.value;
 	
 	this.visitUnary = (unary) => {
-		switch (unary.operator.type) {
-			case TokenType.MINUS: return -evaluate(unary.right); 
-			case TokenType.BANG: return !isTruthy(evaluate(unary.right));
+		const operator = unary.operator;
+		const right = evaluate(unary.right);
+
+		switch (operator.type) {
+			case TokenType.MINUS: return -right; 
+			case TokenType.BANG: return !isTruthy(right);
 			
-			default: throw new Error(`Cannot handle ${unary.operator.type} operator`);
+			default: throw new Error(`Cannot handle ${operator.type} operator`);
 		}
 	};
 
