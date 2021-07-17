@@ -54,7 +54,8 @@ const run = (source) => {
 
 	if (!failed) {
 		const printer = new Printer(expression);
-		const interpreter = new Interpreter(expression);
+		const onRuntimeError = (e) => { failed = true; error(e.token, e.message); };
+		const interpreter = new Interpreter(expression, onRuntimeError);
 
 		console.log("Expression:", expression);
 		console.log("Pretty:", printer.print())	
