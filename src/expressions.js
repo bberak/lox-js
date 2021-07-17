@@ -3,23 +3,32 @@ generateType:
 
 Generate an expresssion type similar to below:
 
-function Binary(left, operator, right) {
-	this.left = left;
-	this.operator = operator;
-	this.right = right;
-	this.accept = (visitor) => visitor.visitBinary(this);
-
-	return this;
+class Binary {
+	constructor(left, operator, right) {
+		this.left = left;
+		this.operator = operator;
+		this.right = right;
+		this.accept = (visitor) => visitor.visitBinary(this);
+	}
+	
+	accept(visitor) {
+		return visitor.visitBinary(this);
+	}
 }
 */
 
 const generateType = (name, ...fields) => {
-	return new Function(`return () => function ${name}(${fields.join(", ")}) {
-		${fields.map((x) => `this.${x} = ${x};`).join("\n")}
-		this.accept = (visitor) => visitor.visit${name}(this);
+	return new Function(`return () => 
+		class ${name} {
+	 		constructor(${fields.join(", ")}) {
+				${fields.map((x) => `this.${x} = ${x};`).join("\n")}
+			}
 
-		return this;
-	}`)()();
+			accept(visitor) {
+				return visitor.visit${name}(this);
+			}
+		}`
+	)()();
 };
 
 module.exports = {
