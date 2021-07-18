@@ -44,57 +44,69 @@ class ParseError extends Error {
 	}
 }
 
-function Parser(tokens, onError) {
-	let current = 0;
+class Parser {
+	#onError;
+	#current;
+	#tokens;
 
-	const peek = () => tokens[current];
+	constructor(onError) {
+		this.#onError = onError;
+	}
 
-	const previous = () => tokens[current - 1];
+	peek() { 
+		return this.#tokens[this.#current];
+	}
 
-	const isAtEnd = () => peek().type === TokenType.EOF;
+	previous() {
+		return this.#tokens[this.#current - 1];
+	}
 
-	const advance = () => {
-		if (!isAtEnd()) current++;
-		return previous();
-	};
+	isAtEnd() {
+		return this.peek().type === TokenType.EOF;
+	}
 
-	const check = (type) => {
-		if (isAtEnd()) return false;
-		return peek().type === type;
-	};
+	advance() {
+		if (!this.isAtEnd()) this.#current++;
+		return this.previous();
+	}
 
-	const error = (token, message) => {
+	check(type) {
+		if (this.isAtEnd()) return false;
+		return this.peek().type === type;
+	}
+
+	error(token, message) {
 		const e = new ParseError(token, message);
-		onError && onError(e);
+		this.#onError && this.#onError(e);
 		return e;
-	};
+	}
 
-	const consume = (type, message) => {
-		if (check(type)) return advance();
+	consume(type, message) {
+		if (this.check(type)) return this.advance();
 
-		throw error(peek(), message);
-	};
+		throw this.error(this.peek(), message);
+	}
 
-	const match = (...types) => {
+	match(...types) {
 		for (let i = 0; i < types.length; i++) {
 			const type = types[i];
 
-			if (check(type)) {
-				advance();
+			if (this.check(type)) {
+				this.advance();
 				return true;
 			}
 		}
 
 		return false;
-	};
+	}
 
-	const synchronize = () => {
-		advance();
+	synchronize() {
+		this.advance();
 
-		while (!isAtEnd()) {
-			if (previous().type === TokenType.SEMICOLON) return;
+		while (!this.isAtEnd()) {
+			if (this.previous().type === TokenType.SEMICOLON) return;
 
-			switch (peek().type) {
+			switch (this.peek().type) {
 				case TokenType.CLASS:
 				case TokenType.FUN:
 				case TokenType.VAR:
@@ -105,88 +117,91 @@ function Parser(tokens, onError) {
 				case TokenType.RETURN:
 					return;
 				default:
-					advance();
+					this.advance();
 			}
 		}
-	};
+	}
 
-	const equality = () => {
-		let expression = comparison();
+	equality() {
+		let expression = this.comparison();
 
-		while (match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
-			const operator = previous();
-			const right = comparison();
+		while (this.match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
+			const operator = this.previous();
+			const right = this.comparison();
+			expression = new Binary(expression, operator, right);
+		}
+
+		return expression;
+	}
+
+	comparison() {
+		let expression = this.term();
+
+		while (this.match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
+			const operator = this.previous();
+			const right = this.term();
 			expression = new Binary(expression, operator, right);
 		}
 
 		return expression;
 	};
 
-	const comparison = () => {
-		let expression = term();
+	term() {
+		let expression = this.factor();
 
-		while (match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
-			const operator = previous();
-			const right = term();
+		while (this.match(TokenType.MINUS, TokenType.PLUS)) {
+			const operator = this.previous();
+			const right = this.factor();
 			expression = new Binary(expression, operator, right);
 		}
 
 		return expression;
-	};
+	}
 
-	const term = () => {
-		let expression = factor();
+	factor() {
+		let expression = this.unary();
 
-		while (match(TokenType.MINUS, TokenType.PLUS)) {
-			const operator = previous();
-			const right = factor();
+		while (this.match(TokenType.STAR, TokenType.SLASH)) {
+			const operator = this.previous();
+			const right = this.unary();
 			expression = new Binary(expression, operator, right);
 		}
 
 		return expression;
-	};
+	}
 
-	const factor = () => {
-		let expression = unary();
-
-		while (match(TokenType.STAR, TokenType.SLASH)) {
-			const operator = previous();
-			const right = unary();
-			expression = new Binary(expression, operator, right);
-		}
-
-		return expression;
-	};
-
-	const unary = () => {
-		if (match(TokenType.BANG, TokenType.MINUS)) {
-			const operator = previous();
-			const right = unary();
+	unary() {
+		if (this.match(TokenType.BANG, TokenType.MINUS)) {
+			const operator = this.previous();
+			const right = this.unary();
 			return new Unary(operator, right);
 		}
 
-		return primary();
-	};
+		return this.primary();
+	}
 
-	const primary = () => {
-		if (match(TokenType.FALSE)) return new Literal(false);
-		if (match(TokenType.TRUE)) return new Literal(true);
-		if (match(TokenType.NIL)) return new Literal(null);
+	primary() {
+		if (this.match(TokenType.FALSE)) return new Literal(false);
+		if (this.match(TokenType.TRUE)) return new Literal(true);
+		if (this.match(TokenType.NIL)) return new Literal(null);
 
-		if (match(TokenType.NUMBER, TokenType.STRING)) return new Literal(previous().literal);
+		if (this.match(TokenType.NUMBER, TokenType.STRING)) return new Literal(this.previous().literal);
 
-		if (match(TokenType.LEFT_PAREN)) {
-			const expression = equality();
-			consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+		if (this.match(TokenType.LEFT_PAREN)) {
+			const expression = this.equality();
+			this.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
 			return new Grouping(expression);
 		}
 
-		throw error(peek(), "Expect expression.");
-	};
+		throw this.error(this.peek(), "Expect expression.");
+	}
 
-	const parse = () => {
+	parse(tokens) {
 		try {
-			return equality();
+			this.#current = 0;
+			this.#tokens = tokens;
+
+			return this.equality();
 		} catch (e) {
 			if (e instanceof ParseError)
 				return null;
@@ -195,11 +210,7 @@ function Parser(tokens, onError) {
 			//-- a test suite or something else we didn't expect.
 			throw e;
 		}
-	};
-
-	return {
-		parse,
-	};
+	}
 }
 
 module.exports = Parser;

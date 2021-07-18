@@ -1,26 +1,32 @@
-function Printer(expression) {
-	const parens = (name, ...expressions) => {
+class Printer {
+	parens(name, ...expressions) {
 		const builder = [`${name}`];
 
 		expressions.forEach((x) => builder.push(x.accept(this)));
 
 		return `(${builder.join(" ")})`;
-	};
+	}
 
-	this.print = () => expression.accept(this);
+	print(expression){ 
+		return expression.accept(this);
+	}
 
-	this.visitBinary = (binary) => parens(binary.operator.lexeme, binary.left, binary.right);
+	visitBinary(binary) { 
+		return this.parens(binary.operator.lexeme, binary.left, binary.right);
+	}
 
-	this.visitGrouping = (grouping) => parens("group", grouping.expression);
+	visitGrouping(grouping) { 
+		return this.parens("group", grouping.expression);
+	}
 
-	this.visitLiteral = (literal) => {
+	visitLiteral(literal) {
 		if (literal.value == null) return "nil";
 		return literal.value.toString();
 	};
 
-	this.visitUnary = (unary) => parens(unary.operator.lexeme, unary.right);
-
-	return this;
+	visitUnary(unary) {
+		return this.parens(unary.operator.lexeme, unary.right);
+	}
 }
 
 module.exports = Printer;

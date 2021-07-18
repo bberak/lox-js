@@ -13,8 +13,8 @@ describe("Parser", function() {
 				new Token(TokenType.NUMBER, "3", 3, 1),
 				new Token(TokenType.EOF, "", null, 1)
 			];
-			const parser = new Parser(tokens);
-			const expression = parser.parse();
+			const parser = new Parser();
+			const expression = parser.parse(tokens);
 
 			assert.isNotNull(expression, "expression is null");
 			assert.isTrue(expression instanceof Binary, "expression should be of type Binary");
@@ -33,8 +33,8 @@ describe("Parser", function() {
 				new Token(TokenType.RIGHT_PAREN, ")", null, 1),
 				new Token(TokenType.EOF, "", null, 1)
 			];
-			const parser = new Parser(tokens);
-			const expression = parser.parse();
+			const parser = new Parser();
+			const expression = parser.parse(tokens);
 
 			assert.isNotNull(expression, "expression is null");
 			assert.isTrue(expression instanceof Grouping, "expression should be of type Grouping");
@@ -48,8 +48,8 @@ describe("Parser", function() {
 				new Token(TokenType.NUMBER, "2", 2, 1),
 				new Token(TokenType.EOF, "", null, 1)
 			];
-			const parser = new Parser(tokens);
-			const expression = parser.parse();
+			const parser = new Parser();
+			const expression = parser.parse(tokens);
 
 			assert.isNotNull(expression, "expression is null");
 			assert.isTrue(expression instanceof Unary, "expression should be of type Unary");
@@ -75,8 +75,8 @@ describe("Parser", function() {
 				new Token(TokenType.EOF, "", null, 1)
 			];
 			
-			const parser = new Parser(tokens, onError);
-			const expression = parser.parse();
+			const parser = new Parser(onError);
+			const expression = parser.parse(tokens);
 
 			assert.isNull(expression, "expression is not null");
 			assert.equal(failed, true, "onError was not called")
@@ -100,8 +100,8 @@ describe("Parser", function() {
 				new Token(TokenType.EOF, "", null, 1)
 			];
 			
-			const parser = new Parser(tokens, onError);
-			const expression = parser.parse();
+			const parser = new Parser(onError);
+			const expression = parser.parse(tokens);
 
 			assert.isNull(expression, "expression is not null");
 			assert.equal(failed, true, "onError was not called")

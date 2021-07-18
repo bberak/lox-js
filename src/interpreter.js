@@ -7,56 +7,64 @@ class RuntimeError extends Error {
 	}
 }
 
-function Interpreter(expression, onError) {
-	const evaluate = (expression) => expression.accept(this);
+class Interpreter {
+	#onError;
 
-	const checkNumberOperand = (operator, operand) => {
+	constructor(onError) {
+		this.#onError = onError;
+	}
+
+	evaluate(expression) { 
+		return expression.accept(this);
+	}
+
+	checkNumberOperand(operator, operand) {
 		if (typeof operand === "number") return;
 		throw new RuntimeError(operator, "Operand must be a number");
-	};
+	}
 
-	const checkNumberOperands = (operator, left, right) => {
+	checkNumberOperands(operator, left, right) {
 		if (typeof left === "number" && typeof right === "number") return;
 		throw new RuntimeError(operator, "Operands must be numbers.");
-	};
+	}
 
-	const stringify = (value) => {
+	stringify(value) {
 		if (value === null) return "nil";
 		return value.toString();
-	};
+	}
 
-	const isTruthy = (value) => {
+	isTruthy(value) {
 		//-- Lox has stricter definitions of truthiness than JavaScript
 		if (value === null) return false;
 		if (typeof value === "boolean") return value;
 
 		return true;
-	};
+	}
 
-	const isEqual = (a, b) => {
+	isEqual(a, b) {
 		if (a === null && b === null) return true;
 		if (a === null) return false;
 
 		return a === b;
-	};
+	}
 
-	this.interpret = () => {
+	interpret(expression) {
 		try {
-			const value = evaluate(expression);
-			return stringify(value);
+			const value = this.evaluate(expression);
+			return this.stringify(value);
 		} catch (err) {
-			onError && onError(err);
+			this.#onError && this.#onError(err);
 		}
-	};
+	}
 
-	this.visitBinary = (binary) => {
+	visitBinary(binary) {
 		const operator = binary.operator;
-		const left = evaluate(binary.left);
-		const right = evaluate(binary.right);
+		const left = this.evaluate(binary.left);
+		const right = this.evaluate(binary.right);
 
 		switch (operator.type) {
 			case TokenType.MINUS:
-				checkNumberOperands(operator, left, right);
+				this.checkNumberOperands(operator, left, right);
 				return left - right;
 
 			case TokenType.PLUS:
@@ -72,62 +80,64 @@ function Interpreter(expression, onError) {
 				);
 
 			case TokenType.SLASH:
-				checkNumberOperands(operator, left, right);
+				this.checkNumberOperands(operator, left, right);
 				return left / right;
 
 			case TokenType.STAR:
-				checkNumberOperands(operator, left, right);
+				this.checkNumberOperands(operator, left, right);
 				return left * right;
 
 			case TokenType.GREATER:
-				checkNumberOperands(operator, left, right);
+				this.checkNumberOperands(operator, left, right);
 				return left > right;
 
 			case TokenType.GREATER_EQUAL:
-				checkNumberOperands(operator, left, right);
+				this.checkNumberOperands(operator, left, right);
 				return left >= right;
 
 			case TokenType.LESS:
-				checkNumberOperands(operator, left, right);
+				this.checkNumberOperands(operator, left, right);
 				return left < right;
 
 			case TokenType.LESS_EQUAL:
-				checkNumberOperands(operator, left, right);
+				this.checkNumberOperands(operator, left, right);
 				return left <= right;
 
 			case TokenType.BANG_EQUAL:
-				return !isEqual(left, right);
+				return !this.isEqual(left, right);
 
 			case TokenType.EQUAL_EQUAL:
-				return isEqual(left, right);
+				return this.isEqual(left, right);
 
 			default:
 				throw new Error(`Cannot handle ${operator.type} operator`);
 		}
-	};
+	}
 
-	this.visitGrouping = (grouping) => evaluate(grouping.expression);
+	visitGrouping(grouping) {
+		return this.evaluate(grouping.expression);
+	}
 
-	this.visitLiteral = (literal) => literal.value;
+	visitLiteral(literal) {
+		return literal.value;
+	}
 
-	this.visitUnary = (unary) => {
+	visitUnary(unary) {
 		const operator = unary.operator;
-		const right = evaluate(unary.right);
+		const right = this.evaluate(unary.right);
 
 		switch (operator.type) {
 			case TokenType.MINUS:
-				checkNumberOperand(operator, right);
+				this.checkNumberOperand(operator, right);
 				return -right;
 
 			case TokenType.BANG:
-				return !isTruthy(right);
+				return !this.isTruthy(right);
 
 			default:
 				throw new Error(`Cannot handle ${operator.type} operator`);
 		}
-	};
-
-	return this;
+	}
 }
 
 module.exports = Interpreter;

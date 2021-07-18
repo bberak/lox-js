@@ -5,8 +5,8 @@ const TokenType = require("../src/token-type");
 describe("Scanner", function() {
 	describe("#scanTokens()", function() {
 		it("should always append EOF token", function() {
-			const scanner = new Scanner("");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens.length, 1, "tokens length mismatch");
@@ -18,8 +18,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify LEFT_PAREN token", function() {
-			const scanner = new Scanner("(");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("(");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.LEFT_PAREN, "types mismatch");
@@ -30,8 +30,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify SLASH token", function() {
-			const scanner = new Scanner("/");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("/");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.SLASH, "types mismatch");
@@ -42,8 +42,8 @@ describe("Scanner", function() {
 		});
 
 		it("should ignore comments", function() {
-			const scanner = new Scanner("//+-whatever");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("//+-whatever");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.EOF, "types mismatch");
@@ -54,8 +54,8 @@ describe("Scanner", function() {
 		});
 
 		it("should ignore whitespaces", function() {
-			const scanner = new Scanner(" \r \t");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens(" \r \t");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.EOF, "types mismatch");
@@ -66,8 +66,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify BANG token", function() {
-			const scanner = new Scanner("!");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("!");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.BANG, "types mismatch");
@@ -78,8 +78,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify BANG_EQUAL token", function() {
-			const scanner = new Scanner("!=");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("!=");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.BANG_EQUAL, "types mismatch");
@@ -90,8 +90,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify EQUAL token", function() {
-			const scanner = new Scanner("=");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("=");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.EQUAL, "types mismatch");
@@ -102,8 +102,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify EQUAL_EQUAL token", function() {
-			const scanner = new Scanner("==");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("==");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.EQUAL_EQUAL, "types mismatch");
@@ -114,8 +114,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify valid tokens on different lines", function() {
-			const scanner = new Scanner("!\n=");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("!\n=");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.isOk(tokens.length >= 2, "tokens length mismatch");
@@ -139,8 +139,8 @@ describe("Scanner", function() {
 				=
 			`;
 
-			const scanner = new Scanner(source);
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens(source);
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.isOk(tokens.length >= 2, "tokens length mismatch");
@@ -168,8 +168,8 @@ describe("Scanner", function() {
 				assert.equal(e.message, "Unexpected character: @", "error messages mismatch");
 			};
 
-			const scanner = new Scanner("@", onError);
-			scanner.scanTokens();
+			const scanner = new Scanner(onError);
+			scanner.scanTokens("@");
 
 			assert.equal(failed, true, "onError was not called")
 		});
@@ -186,8 +186,8 @@ describe("Scanner", function() {
 				errorIndex++;
 			};
 
-			const scanner = new Scanner("@^", onError);
-			scanner.scanTokens();
+			const scanner = new Scanner(onError);
+			scanner.scanTokens("@^");
 
 			assert.equal(failed, true, "onError was not called")
 		});
@@ -209,15 +209,15 @@ describe("Scanner", function() {
 				^
 			`;
 
-			const scanner = new Scanner(source, onError);
-			scanner.scanTokens();
+			const scanner = new Scanner(onError);
+			scanner.scanTokens(source);
 
 			assert.equal(failed, true, "onError was not called")
 		});
 
 		it("should identify STRING token", function() {
-			const scanner = new Scanner(`"abc123"`);
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens(`"abc123"`);
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.STRING, "types mismatch");
@@ -228,8 +228,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify STRING token and handle escape character", function() {
-			const scanner = new Scanner(`"abc\\123"`); 
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner(); 
+			const tokens = scanner.scanTokens(`"abc\\123"`);
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.STRING, "types mismatch");
@@ -240,8 +240,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify multi-line STRING token", function() {
-			const scanner = new Scanner(`"abc\n123"`);
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens(`"abc\n123"`);
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.STRING, "types mismatch");
@@ -252,8 +252,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify multi-line STRING token with tabs", function() {
-			const scanner = new Scanner(`"abc\n\t123"`);
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens(`"abc\n\t123"`);
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.STRING, "types mismatch");
@@ -268,8 +268,8 @@ describe("Scanner", function() {
 			abc
 			123
 			"`;
-			const scanner = new Scanner(source);
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens(source);
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.STRING, "types mismatch");
@@ -289,15 +289,15 @@ describe("Scanner", function() {
 				assert.equal(e.message, "Unterminated string.", "error messages mismatch");
 			};
 
-			const scanner = new Scanner("\"abc123", onError);
-			scanner.scanTokens();
+			const scanner = new Scanner(onError);
+			scanner.scanTokens("\"abc123");
 
 			assert.equal(failed, true, "onError was not called")
 		});
 
 		it("should identify NUMBER token", function() {
-			const scanner = new Scanner("123");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("123");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.NUMBER, "types mismatch");
@@ -308,8 +308,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify NUMBER token with decimal", function() {
-			const scanner = new Scanner("123.123");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("123.123");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 			assert.equal(tokens[0].type, TokenType.NUMBER, "types mismatch");
@@ -320,8 +320,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify various reserved word tokens", function() {
-			const scanner = new Scanner("or true while");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("or true while");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 
@@ -345,8 +345,8 @@ describe("Scanner", function() {
 		});
 
 		it("should identify various IDENTIFIER tokens", function() {
-			const scanner = new Scanner("maxYears _loading check2");
-			const tokens = scanner.scanTokens();
+			const scanner = new Scanner();
+			const tokens = scanner.scanTokens("maxYears _loading check2");
 
 			assert.isNotEmpty(tokens, "tokens are empty");
 
