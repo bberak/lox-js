@@ -15,7 +15,7 @@ describe("Printer", function() {
 			const printer = new Printer();
 			const result = printer.print(expression);
 
-			assert.isNotEmpty(result, "print result is empty");
+			assert.isNotEmpty(result, "result is empty");
 			assert.equal(result, "(* (- 123) (group 45.67))", "print result is incorrect");
 		});
 
@@ -28,7 +28,7 @@ describe("Printer", function() {
 			const printer = new Printer();
 			const result = printer.print(expression);
 
-			assert.isNotEmpty(result, "print result is empty");
+			assert.isNotEmpty(result, "result is empty");
 			assert.equal(result, "(* (- 123) (group (+ 3 4)))", "print result is incorrect");
 		});
 	});

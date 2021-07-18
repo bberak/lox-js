@@ -169,8 +169,11 @@ describe("Scanner", function() {
 			};
 
 			const scanner = new Scanner(onError);
-			scanner.scanTokens("@");
+			const tokens = scanner.scanTokens("@");
 
+			assert.isNotEmpty(tokens, "tokens is not empty");
+			assert.equal(tokens.length, 1, "should only be one token");
+			assert.equal(tokens[0].type, TokenType.EOF, "types mismatch");
 			assert.equal(failed, true, "onError was not called")
 		});
 
@@ -187,8 +190,11 @@ describe("Scanner", function() {
 			};
 
 			const scanner = new Scanner(onError);
-			scanner.scanTokens("@^");
+			const tokens = scanner.scanTokens("@^");
 
+			assert.isNotEmpty(tokens, "tokens is not empty");
+			assert.equal(tokens.length, 1, "should only be one token");
+			assert.equal(tokens[0].type, TokenType.EOF, "types mismatch");
 			assert.equal(failed, true, "onError was not called")
 		});
 
@@ -210,8 +216,11 @@ describe("Scanner", function() {
 			`;
 
 			const scanner = new Scanner(onError);
-			scanner.scanTokens(source);
+			const tokens = scanner.scanTokens(source);
 
+			assert.isNotEmpty(tokens, "tokens is not empty");
+			assert.equal(tokens.length, 1, "should only be one token");
+			assert.equal(tokens[0].type, TokenType.EOF, "types mismatch");
 			assert.equal(failed, true, "onError was not called")
 		});
 
@@ -288,10 +297,17 @@ describe("Scanner", function() {
 				assert.equal(e.line, 1, "line numbers mismatch");
 				assert.equal(e.message, "Unterminated string.", "error messages mismatch");
 			};
-
+			
 			const scanner = new Scanner(onError);
-			scanner.scanTokens("\"abc123");
+			const tokens = scanner.scanTokens("\"abc123");
 
+			assert.isNotEmpty(tokens, "tokens is not empty");
+			assert.equal(tokens.length, 2, "should only be two tokens");
+			assert.equal(tokens[0].type, TokenType.STRING, "types mismatch");
+			assert.equal(tokens[0].lexeme, `"abc123`, "lexemes mismatch");
+			assert.equal(tokens[0].literal, `abc123`, "literals mismatch");
+			assert.equal(tokens[0].line, 1, "line numbers mismatch");
+			assert.equal(tokens[1].type, TokenType.EOF, "types mismatch");
 			assert.equal(failed, true, "onError was not called")
 		});
 

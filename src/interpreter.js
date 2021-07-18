@@ -20,7 +20,7 @@ class Interpreter {
 
 	checkNumberOperand(operator, operand) {
 		if (typeof operand === "number") return;
-		throw new RuntimeError(operator, "Operand must be a number");
+		throw new RuntimeError(operator, "Operand must be a number.");
 	}
 
 	checkNumberOperands(operator, left, right) {
